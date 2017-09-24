@@ -31,7 +31,7 @@ public:
 
 			return true;
 		}
-	
+
 	virtual bool OnUpdate(float elapsed_time)
 		{
 			const Uint8 *state = SDL_GetKeyboardState(NULL);
@@ -47,11 +47,27 @@ public:
 			{
 				player_x += sinf(player_a) * 5.0f * elapsed_time;
 				player_y += cosf(player_a) * 5.0f * elapsed_time;
+
+				int x = static_cast<int>(player_x);
+				int y = static_cast<int>(player_y);
+				if (get_map(x, y) == '#')
+				{
+					player_x -= sinf(player_a) * 5.0f * elapsed_time;
+					player_y -= cosf(player_a) * 5.0f * elapsed_time;
+				}
 			}
 			if (state[SDL_SCANCODE_S] || state[SDL_SCANCODE_DOWN])
 			{
 				player_x -= sinf(player_a) * 5.0f * elapsed_time;
 				player_y -= cosf(player_a) * 5.0f * elapsed_time;
+
+				int x = static_cast<int>(player_x);
+				int y = static_cast<int>(player_y);
+				if (get_map(x, y) == '#')
+				{
+					player_x += sinf(player_a) * 5.0f * elapsed_time;
+					player_y += cosf(player_a) * 5.0f * elapsed_time;
+				}
 			}
 
 			SDL_Renderer *renderer = get_renderer();
@@ -79,7 +95,7 @@ public:
 					}
 					else
 					{
-						if (map.c_str()[test_y * map_w + test_x] == '#')
+						if (get_map(test_x, test_y) == '#')
 						{
 							hitwall = true;
 						}
@@ -118,6 +134,8 @@ public:
 		}
 
 private:
+	char get_map(int x, int y) const { return map.c_str()[(map_h - y - 1) * map_w + x]; }
+
 	string map;
 	int map_w = 16;
 	int map_h = 16;
