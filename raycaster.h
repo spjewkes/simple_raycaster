@@ -37,11 +37,11 @@ public:
 			const Uint8 *state = SDL_GetKeyboardState(NULL);
 			if (state[SDL_SCANCODE_A] || state[SDL_SCANCODE_LEFT])
 			{
-				player_a -= (0.5f * elapsed_time);
+				player_a -= (0.75f * elapsed_time);
 			}
 			if (state[SDL_SCANCODE_D] || state[SDL_SCANCODE_RIGHT])
 			{
-				player_a += (0.5f * elapsed_time);
+				player_a += (0.75f * elapsed_time);
 			}
 			if (state[SDL_SCANCODE_W] || state[SDL_SCANCODE_UP])
 			{
@@ -89,18 +89,27 @@ public:
 				int ceiling = static_cast<float>(height() / 2.0f) - height() / distance_to_wall;
 				int floor = height() - ceiling;
 				
+				int shade = 255 - static_cast<int>(16.0 * (distance_to_wall < 15.0f ? distance_to_wall : 15.0f));
+
 				// Ceiling
-				SDL_SetRenderDrawColor(renderer, 255, 0, 0, SDL_ALPHA_OPAQUE);
-				SDL_RenderDrawLine(renderer, x, 0, x, ceiling);
+				for (int y=0; y<ceiling; y++)
+				{
+					int col = 255 - (y < 255 ? y : 255);
+					SDL_SetRenderDrawColor(renderer, col, 0, 0, SDL_ALPHA_OPAQUE);
+					SDL_RenderDrawPoint(renderer, x, y);
+				}
 
 				// Wall
-				int wall_shade = 255 - static_cast<int>(16.0 * distance_to_wall);
-				SDL_SetRenderDrawColor(renderer, wall_shade, wall_shade, wall_shade, SDL_ALPHA_OPAQUE);
+				SDL_SetRenderDrawColor(renderer, shade, shade, shade, SDL_ALPHA_OPAQUE);
 				SDL_RenderDrawLine(renderer, x, ceiling, x, floor);
 
 				// Floor
-				SDL_SetRenderDrawColor(renderer, 0, 0, 255, SDL_ALPHA_OPAQUE);
-				SDL_RenderDrawLine(renderer, x, floor, x, height());
+				for (int y=floor; y<height(); y++)
+				{
+					int col = 255 - ((height() - y) < 255 ? height() - y : 255);
+					SDL_SetRenderDrawColor(renderer, 0, 0, col, SDL_ALPHA_OPAQUE);
+					SDL_RenderDrawPoint(renderer, x, y);
+				}
 			}
 
 			SDL_RenderPresent(renderer);
