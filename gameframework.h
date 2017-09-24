@@ -21,14 +21,14 @@ private:
 class GameFramework
 {
 public:
-	GameFramework(int _width, int _height) : width(_width), height(_height)
+	GameFramework(int width, int height) : w(width), h(height)
 		{
 			if (SDL_Init(SDL_INIT_VIDEO) < 0)
 			{
 				throw GameException("Failed to init SDL");
 			}
 
-			window = SDL_CreateWindow( get_name(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN );
+			window = SDL_CreateWindow( get_name(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, w, h, SDL_WINDOW_SHOWN );
 			if (!window)
 			{
 				throw GameException("Failed to create SDL window");
@@ -105,11 +105,13 @@ protected:
 	
 	SDL_Window* get_window() { return window; }
 	SDL_Renderer* get_renderer() { return renderer; }
+	int width() const { return w; }
+	int height() const { return h; }
 
 private:
 	SDL_Window* window = NULL;
 	SDL_Renderer* renderer = NULL;
 
-	int width = 0;
-	int height = 0;
+	int w = 0;
+	int h = 0;
 };
