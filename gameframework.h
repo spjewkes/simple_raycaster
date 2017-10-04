@@ -43,6 +43,7 @@ public:
 
 	virtual bool OnCreate() = 0;
 	virtual bool OnUpdate(float elapsed_time) = 0;
+	virtual void OnDestroy() = 0;
 
 	void start()
 		{
@@ -82,8 +83,13 @@ public:
 				snprintf(title, 256, "%8.2f fps - %s", 1.0 / elapsed_time.count(), get_name());
 				SDL_SetWindowTitle(window, title);
 				
-				OnUpdate(elapsed_time.count());
+				if (!OnUpdate(elapsed_time.count()))
+				{
+					throw GameException("Failed on game update");
+				}
 			}
+
+			OnDestroy();
 		}
 
 	virtual ~GameFramework()
