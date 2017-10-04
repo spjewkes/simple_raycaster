@@ -55,7 +55,7 @@ public:
 					}
 					else
 					{
-						data_wall[y * 256 + x] = x << 24 | x << 16 | 0xff;
+						data_wall[y * 256 + x] = x << 24 | x << 16 | y << 8 | 0xff;
 					}
 				}
 			}
@@ -159,8 +159,6 @@ public:
 				SDL_Rect rect_src = { shade, 0, 1, 256 };
 				SDL_Rect rect_dst = { x, ceiling, 1, floor - ceiling };
 				SDL_RenderCopy(renderer, tex_wall, &rect_src, &rect_dst);
-				/* SDL_SetRenderDrawColor(renderer, shade, shade, shade, SDL_ALPHA_OPAQUE); */
-				/* SDL_RenderDrawLine(renderer, x, ceiling, x, floor); */
 			}
 
 			SDL_RenderPresent(renderer);
