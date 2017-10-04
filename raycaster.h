@@ -33,7 +33,8 @@ public:
 			SDL_Renderer *renderer = get_renderer();
 			tex_ceil = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STATIC, 1, 256);
 			tex_floor = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STATIC, 1, 256);
-			if (!tex_ceil || !tex_floor)
+			tex_wall = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STATIC, 256, 256);
+			if (!tex_ceil || !tex_floor || !tex_wall)
 			{
 				cerr << "Failed to create textures.\n";
 				return false;
@@ -41,16 +42,29 @@ public:
 
 			unsigned int data_ceil[256];
 			unsigned int data_floor[256];
-			for (unsigned int i=0; i<256; i++)
+			unsigned int data_wall[65536];
+			for (unsigned int y=0; y<256; y++)
 			{
-				data_ceil[i] = (255-i) << 8 | 0xff;
-				data_floor[i] = i << 24 | 0xff;
+				data_ceil[y] = (255-y) << 8 | 0xff;
+				data_floor[y] = y << 24 | 0xff;
+				for (unsigned int x=0; x<256; x++)
+				{
+					if (y % 16 == 0)
+					{
+						data_wall[y * 256 + x] = 0;
+					}
+					else
+					{
+						data_wall[y * 256 + x] = x << 24 | x << 16 | 0xff;
+					}
+				}
 			}
 
 			SDL_Rect rect = { 0, 0, 1, 256 };
-
+			SDL_Rect rect_wall = { 0, 0, 256, 256 };
 			if (SDL_UpdateTexture(tex_ceil, &rect, data_ceil, sizeof(unsigned int)) ||
-				SDL_UpdateTexture(tex_floor, &rect, data_floor, sizeof(unsigned int)))
+				SDL_UpdateTexture(tex_floor, &rect, data_floor, sizeof(unsigned int)) ||
+				SDL_UpdateTexture(tex_wall, &rect_wall, data_wall, sizeof(unsigned int) * 256))
 			{
 				cerr << "Failed to update textures.\n";
 				return false;
@@ -117,7 +131,7 @@ public:
 
 				while (!hitwall && distance_to_wall < depth)
 				{
-					distance_to_wall += 0.1f;
+					distance_to_wall += 0.01f;
 
 					int test_x = static_cast<int>(player_x + eyex * distance_to_wall);
 					int test_y = static_cast<int>(player_y + eyey * distance_to_wall);
@@ -142,8 +156,11 @@ public:
 				int shade = 255 - static_cast<int>(16.0 * (distance_to_wall < 15.0f ? distance_to_wall : 15.0f));
 
 				// Wall
-				SDL_SetRenderDrawColor(renderer, shade, shade, shade, SDL_ALPHA_OPAQUE);
-				SDL_RenderDrawLine(renderer, x, ceiling, x, floor);
+				SDL_Rect rect_src = { shade, 0, 1, 256 };
+				SDL_Rect rect_dst = { x, ceiling, 1, floor - ceiling };
+				SDL_RenderCopy(renderer, tex_wall, &rect_src, &rect_dst);
+				/* SDL_SetRenderDrawColor(renderer, shade, shade, shade, SDL_ALPHA_OPAQUE); */
+				/* SDL_RenderDrawLine(renderer, x, ceiling, x, floor); */
 			}
 
 			SDL_RenderPresent(renderer);
@@ -155,6 +172,7 @@ public:
 	{
 		SDL_DestroyTexture(tex_ceil);
 		SDL_DestroyTexture(tex_floor);
+		SDL_DestroyTexture(tex_wall);
 	}
 
 private:
