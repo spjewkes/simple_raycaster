@@ -1,6 +1,6 @@
 #include "raycaster.h"
 
-int main(int argc, char *argv[])
+int main()
 {
 	GameRC game(800, 600);
 	game.start();
