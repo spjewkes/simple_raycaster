@@ -1,3 +1,6 @@
+#ifndef __RAYCASTER_H__
+#define __RAYCASTER_H__
+
 #include <SDL2/SDL.h>
 #include <string>
 #include <cmath>
@@ -192,3 +195,5 @@ private:
 	SDL_Texture* tex_floor;
 	SDL_Texture* tex_wall;
 };
+
+#endif
