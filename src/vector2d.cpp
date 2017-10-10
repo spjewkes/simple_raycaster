@@ -6,7 +6,10 @@
  */
 Vector2d::Vector2d(const Vector2d& rhs)
 {
-	if (this == &rhs)	return;
+	if (this == &rhs)
+	{
+		return;
+	}
 	
 	m_x = rhs.m_x;
 	m_y = rhs.m_y;
@@ -17,8 +20,11 @@ Vector2d::Vector2d(const Vector2d& rhs)
  */
 Vector2d& Vector2d::operator=(const Vector2d& rhs)
 {
-	if (this == &rhs)	return *this;
-	
+	if (this == &rhs)
+	{
+		return *this;
+	}
+
 	m_x = rhs.m_x;
 	m_y = rhs.m_y;
 	
