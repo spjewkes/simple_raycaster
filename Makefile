@@ -6,10 +6,10 @@ EXE=simple_raycaster
 OBJ_DIR=obj
 SRC_DIR=src
 
-_DEPS=gameframework.h raycaster.h vector2d.h ray.h
+_DEPS=gameframework.h raycaster.h vector2d.h ray.h aabb.h
 DEPS=$(patsubst %,$(SRC_DIR)/%,$(_DEPS))
 
-_OBJ=main.o vector2d.o ray.o
+_OBJ=main.o vector2d.o ray.o aabb.o
 OBJ=$(patsubst %,$(OBJ_DIR)/%,$(_OBJ))
 
 OS := $(shell uname)
