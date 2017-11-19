@@ -190,6 +190,17 @@ bool Vector2d::operator>=(const Vector2d& rhs) const
 	}
 }
 
+float Vector2d::operator[](const int rhs) const
+{
+	switch (rhs)
+	{
+	case 0: return m_x;
+	case 1: return m_y;
+	default: throw std::out_of_range("Index to vector 2d is out-of-bounds");
+	}
+	return 0.0f;
+}
+
 /**
  * Get length of vector.
  */

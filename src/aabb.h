@@ -3,6 +3,7 @@
 
 #include <ostream>
 #include "vector2d.h"
+#include "ray.h"
 
 /**
  * CLass for axis-aligned bounding box (AABB) type.
@@ -14,7 +15,9 @@ public:
 
 	/// Constructors.
 	AABB() {}
-	AABB(Vector2d &min, Vector2d &max) : m_min(min), m_max(max) {}
+	AABB(Vector2d &min, Vector2d &max) :
+		m_min(std::min(min.x(), max.x()), std::min(min.y(), max.y())),
+		m_max(std::max(min.x(), max.x()), std::max(min.y(), max.y())) {}
 
 	/// Destructors.
 	~AABB() {}
@@ -28,8 +31,9 @@ public:
 	/// Set and get operators.
 	Vector2d& min() { return m_min; }
 	Vector2d& max() { return m_max; }
-	void min(const Vector2d& min) { m_min = min; }
-	void max(const Vector2d& max) { m_max = max; }
+
+	/// Test for collision
+	bool is_hit(Ray &ray, Vector2d &hit) const;
 
 private:
 	/// Properties of AABB.

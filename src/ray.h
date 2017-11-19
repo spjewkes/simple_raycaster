@@ -14,7 +14,7 @@ public:
 
 	/// Constructors.
 	Ray() {}
-	Ray(Vector2d &origin, Vector2d &dir) : m_origin(origin), m_dir(dir) {}
+	Ray(Vector2d &origin, Vector2d &dir) : m_origin(origin), m_dir(dir) { calc_end(); }
 
 	/// Destructors.
 	~Ray() {}
@@ -28,8 +28,9 @@ public:
 	/// Set and get operators.
 	Vector2d& origin() { return m_origin; }
 	Vector2d& dir() { return m_dir; }
-	void origin(const Vector2d& origin) { m_origin = origin; }
-	void dir(const Vector2d& dir) { m_dir = dir; }
+	Vector2d& end() { return m_end; }
+	void origin(const Vector2d& origin) { m_origin = origin; calc_end(); }
+	void dir(const Vector2d& dir) { m_dir = dir; calc_end(); }
 
 	/// Get length of ray.
 	float length() const { return m_dir.length(); }
@@ -38,9 +39,13 @@ public:
 	float length2() const { return m_dir.length2(); }
 
 private:
+	/// Calculate end point based on the other two values.
+	void calc_end() { m_end = m_origin + m_dir; }
+
 	/// Properties of ray.
 	Vector2d m_origin;
 	Vector2d m_dir;
+	Vector2d m_end;
 };
 
 std::ostream& operator<<(std::ostream &out, const Ray &rhs);

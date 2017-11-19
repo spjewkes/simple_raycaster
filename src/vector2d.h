@@ -38,6 +38,7 @@ public:
 	bool operator<=(const Vector2d& rhs) const;
 	bool operator>(const Vector2d& rhs) const;
 	bool operator>=(const Vector2d& rhs) const;
+	float operator[](const int rhs) const;
 	
 	/// Set and get operators.
 	float x() const { return m_x; }
