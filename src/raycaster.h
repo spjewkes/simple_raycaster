@@ -155,7 +155,7 @@ public:
 			
 			for (int x=0; x<width(); x++)
 			{
-				float rayAngle = (player_a - fov / (base_fov / 2.0f)) + (static_cast<float>(x)  / static_cast<float>(width())) * fov;
+				float rayAngle = (player_a - fov / 2.0f) + (static_cast<float>(x)  / static_cast<float>(width())) * fov;
 				float distance_to_wall = 0.0f;
 				bool hitwall = false;
 
@@ -209,7 +209,7 @@ public:
 					}
 				}
 
-				int ceiling = static_cast<float>(height() / (base_fov / 2.0f)) - height() / distance_to_wall;
+				int ceiling = static_cast<float>(height() / 2.0f) - height() / distance_to_wall;
 				int floor = height() - ceiling;
 				
 				int shade = 255.0f * sample_x;
@@ -244,7 +244,7 @@ private:
 	float player_y = 8.0f;
 	float player_a = 0.0f;
 
-	float base_fov = 4.0f;
+	float base_fov = 2.5f;
 	float fov = base_fov / 3.14159f;
 
 	SDL_Texture* tex_ceil;
