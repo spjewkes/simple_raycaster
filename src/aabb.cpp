@@ -67,16 +67,10 @@ bool AABB::is_hit(Ray &ray, Vector2d &hit) const
 				t_max = t2;
 			}
 
-			if (t_min > t_max)
+			if ((t_min > t_max) || (t_max < 0.0f))
 			{
 				return false;
 			}
-
-			if (t_max < 0.0f)
-			{
-				return false;
-			}
-
 		}
 		else if ((-e - half[i] > 0.0f) || (-e + half[i] < 0))
 		{

@@ -113,6 +113,36 @@ public:
 					player_y += cosf(player_a) * 5.0f * elapsed_time;
 				}
 			}
+			if (((state[SDL_SCANCODE_A] || state[SDL_SCANCODE_LEFT]) &&
+				 (state[SDL_SCANCODE_LSHIFT] || state[SDL_SCANCODE_RSHIFT])) ||
+				(state[SDL_SCANCODE_Q]))
+			{
+                player_x -= cosf(player_a) * 5.0f * elapsed_time;
+				player_y += sinf(player_a) * 5.0f * elapsed_time;
+
+				int x = static_cast<int>(player_x);
+				int y = static_cast<int>(player_y);
+				if (get_map(x, y) == '#')
+				{
+					player_x += cosf(player_a) * 5.0f * elapsed_time;
+					player_y -= sinf(player_a) * 5.0f * elapsed_time;
+				}
+			}
+			if (((state[SDL_SCANCODE_D] || state[SDL_SCANCODE_RIGHT]) &&
+				 (state[SDL_SCANCODE_LSHIFT] || state[SDL_SCANCODE_RSHIFT])) ||
+				(state[SDL_SCANCODE_E]))
+			{
+                player_x += cosf(player_a) * 5.0f * elapsed_time;
+				player_y -= sinf(player_a) * 5.0f * elapsed_time;
+
+				int x = static_cast<int>(player_x);
+				int y = static_cast<int>(player_y);
+				if (get_map(x, y) == '#')
+				{
+					player_x -= cosf(player_a) * 5.0f * elapsed_time;
+					player_y += sinf(player_a) * 5.0f * elapsed_time;
+				}
+			}
 
 			SDL_Renderer *renderer = get_renderer();
 			SDL_Rect rect_src = { 0, 0, 1, 256 };
@@ -132,22 +162,27 @@ public:
 				float eyex = sinf(rayAngle);
 				float eyey = cosf(rayAngle);
 
+				float pos_x = 0.0f;
+
 				while (!hitwall && distance_to_wall < depth)
 				{
 					distance_to_wall += 0.01f;
 
-					int test_x = static_cast<int>(player_x + eyex * distance_to_wall);
-					int test_y = static_cast<int>(player_y + eyey * distance_to_wall);
+					float test_x = player_x + eyex * distance_to_wall;
+					float test_y = player_y + eyey * distance_to_wall;
 
-					if (test_x < 0 || test_x >= map_w || test_y < 0 || test_y >= map_h)
+					if (test_x < 0.0f || test_x >= static_cast<float>(map_w) ||
+						test_y < 0.0f || test_y >= static_cast<float>(map_h))
 					{
 						hitwall = true;
 						distance_to_wall = depth;
 					}
 					else
 					{
-						if (get_map(test_x, test_y) == '#')
+						if (get_map(static_cast<int>(test_x), static_cast<int>(test_y)) == '#')
 						{
+							double intpart;
+							pos_x = std::modf(test_x, &intpart);
 							hitwall = true;
 						}
 					}
@@ -157,7 +192,8 @@ public:
 				int floor = height() - ceiling;
 				
 				int shade = 255 - static_cast<int>(16.0 * (distance_to_wall < 15.0f ? distance_to_wall : 15.0f));
-
+				/* int shade = 256.0f * pos_x; */
+				
 				// Wall
 				SDL_Rect rect_src = { shade, 0, 1, 256 };
 				SDL_Rect rect_dst = { x, ceiling, 1, floor - ceiling };
