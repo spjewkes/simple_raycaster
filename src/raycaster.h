@@ -162,7 +162,7 @@ public:
 				float eyex = sinf(rayAngle);
 				float eyey = cosf(rayAngle);
 
-				float pos_x = 0.0f;
+				float sample_x = 0.0f;
 
 				while (!hitwall && distance_to_wall < depth)
 				{
@@ -181,9 +181,30 @@ public:
 					{
 						if (get_map(static_cast<int>(test_x), static_cast<int>(test_y)) == '#')
 						{
-							double intpart;
-							pos_x = std::modf(test_x, &intpart);
 							hitwall = true;
+
+							// Determine where ray has hit the wall.
+							float block_mid_x = std::floor(test_x) + 0.5f;
+							float block_mid_y = std::floor(test_y) + 0.5f;
+
+							float test_angle = std::atan2f(test_y - block_mid_y, test_x - block_mid_x);
+							double intpart;
+							if (test_angle >= -3.14195f * 0.25f && test_angle < 3.14195f * 0.25f)
+							{
+								sample_x = std::modf(test_y, &intpart);
+							}
+							else if (test_angle >= 3.14195f * 0.25f && test_angle < 3.14195f * 0.75f)
+							{
+								sample_x = std::modf(test_x, &intpart);
+							}
+							else if (test_angle >= -3.14195f * 0.75f && test_angle < -3.14195f * 0.25f)
+							{
+								sample_x = std::modf(test_x, &intpart);
+							}
+							else if (test_angle >= 3.14195f * 0.75f || test_angle < -3.14195f * 0.75f)
+							{
+								sample_x = std::modf(test_y, &intpart);
+							}
 						}
 					}
 				}
@@ -191,8 +212,7 @@ public:
 				int ceiling = static_cast<float>(height() / (base_fov / 2.0f)) - height() / distance_to_wall;
 				int floor = height() - ceiling;
 				
-				int shade = 255 - static_cast<int>(16.0 * (distance_to_wall < 15.0f ? distance_to_wall : 15.0f));
-				/* int shade = 256.0f * pos_x; */
+				int shade = 255.0f * sample_x;
 				
 				// Wall
 				SDL_Rect rect_src = { shade, 0, 1, 256 };
