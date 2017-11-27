@@ -52,20 +52,12 @@ public:
 			SDL_Renderer *renderer = get_renderer();
 			tex_ceil = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STATIC, 1, 256);
 			tex_floor = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STATIC, 1, 256);
-			SDL_Surface *surf_wall = SDL_LoadBMP("res/wall.bmp");
-			if (!surf_wall)
-			{
-				cerr << "Failed to load wall texture: " <<  SDL_GetError() << endl;
-				return false;
-			}
-			/* tex_wall = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STATIC, 256, 256); */
-			tex_wall = SDL_CreateTextureFromSurface(renderer, surf_wall);
+			tex_wall = loadTexture("res/wall_1.bmp");
 			if (!tex_ceil || !tex_floor || !tex_wall)
 			{
 				cerr << "Failed to create textures.\n";
 				return false;
 			}
-			SDL_FreeSurface(surf_wall);
 
 			unsigned int data_ceil[256];
 			unsigned int data_floor[256];
@@ -249,6 +241,25 @@ public:
 	}
 
 private:
+	SDL_Texture* loadTexture(const char *filename)
+	{
+			SDL_Renderer *renderer = get_renderer();
+			SDL_Surface *surf = SDL_LoadBMP(filename);
+			if (!surf)
+			{
+				cerr << "Failed to load texture: " << filename << " : " <<  SDL_GetError() << endl;
+				return NULL;
+			}
+			SDL_Texture *tex = SDL_CreateTextureFromSurface(renderer, surf);
+			if (!tex)
+			{
+				cerr << "Failed to create texture from surface: " << filename << " : " <<  SDL_GetError() << endl;
+				return NULL;
+			}
+			SDL_FreeSurface(surf);
+			return tex;
+	}
+
 	char get_map(int x, int y) const { return map.c_str()[(map_h - y - 1) * map_w + x]; }
 
 	string map;
