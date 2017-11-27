@@ -52,8 +52,11 @@ public:
 			SDL_Renderer *renderer = get_renderer();
 			tex_ceil = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STATIC, 1, 256);
 			tex_floor = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STATIC, 1, 256);
-			tex_wall = loadTexture("res/wall_1.bmp");
-			if (!tex_ceil || !tex_floor || !tex_wall)
+			tex_wall[0] = loadTexture("res/wall_1.bmp");
+			tex_wall[1] = loadTexture("res/wall_2.bmp");
+			tex_wall[2] = loadTexture("res/wall_3.bmp");
+			tex_wall[3] = loadTexture("res/wall_4.bmp");
+			if (!tex_ceil || !tex_floor || !tex_wall[0] || !tex_wall[1] || !tex_wall[2] || !tex_wall[3])
 			{
 				cerr << "Failed to create textures.\n";
 				return false;
@@ -225,7 +228,14 @@ public:
 				// Wall
 				SDL_Rect rect_src = { shade, 0, 1, 256 };
 				SDL_Rect rect_dst = { x, ceiling, 1, floor - ceiling };
-				SDL_RenderCopy(renderer, tex_wall, &rect_src, &rect_dst);
+				if (distance_to_wall < 4.0f)
+					SDL_RenderCopy(renderer, tex_wall[0], &rect_src, &rect_dst);
+				else if (distance_to_wall < 8.0f)
+					SDL_RenderCopy(renderer, tex_wall[1], &rect_src, &rect_dst);
+				else if (distance_to_wall < 12.0f)
+					SDL_RenderCopy(renderer, tex_wall[2], &rect_src, &rect_dst);
+				else
+					SDL_RenderCopy(renderer, tex_wall[3], &rect_src, &rect_dst);
 			}
 
 			SDL_RenderPresent(renderer);
@@ -237,7 +247,10 @@ public:
 	{
 		SDL_DestroyTexture(tex_ceil);
 		SDL_DestroyTexture(tex_floor);
-		SDL_DestroyTexture(tex_wall);
+		SDL_DestroyTexture(tex_wall[0]);
+		SDL_DestroyTexture(tex_wall[1]);
+		SDL_DestroyTexture(tex_wall[2]);
+		SDL_DestroyTexture(tex_wall[3]);
 	}
 
 private:
@@ -276,7 +289,7 @@ private:
 
 	SDL_Texture* tex_ceil;
 	SDL_Texture* tex_floor;
-	SDL_Texture* tex_wall;
+	SDL_Texture* tex_wall[4];
 };
 
 #endif
