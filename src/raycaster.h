@@ -228,11 +228,11 @@ public:
 				// Wall
 				SDL_Rect rect_src = { shade, 0, 1, 256 };
 				SDL_Rect rect_dst = { x, ceiling, 1, floor - ceiling };
-				if (distance_to_wall < 4.0f)
+				if (distance_to_wall < 8.0f)
 					SDL_RenderCopy(renderer, tex_wall[0], &rect_src, &rect_dst);
-				else if (distance_to_wall < 8.0f)
-					SDL_RenderCopy(renderer, tex_wall[1], &rect_src, &rect_dst);
 				else if (distance_to_wall < 12.0f)
+					SDL_RenderCopy(renderer, tex_wall[1], &rect_src, &rect_dst);
+				else if (distance_to_wall < 14.0f)
 					SDL_RenderCopy(renderer, tex_wall[2], &rect_src, &rect_dst);
 				else
 					SDL_RenderCopy(renderer, tex_wall[3], &rect_src, &rect_dst);
