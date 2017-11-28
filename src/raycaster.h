@@ -64,16 +64,19 @@ public:
 
 			unsigned int data_ceil[256];
 			unsigned int data_floor[256];
+			auto _to_rgba = [](float r, float g, float b)
+			{
+				return (static_cast<int>(255 * r) & 0xff) << 24 |
+				(static_cast<int>(255 * g) & 0xff) << 16 |
+				(static_cast<int>(255 * b) & 0xff) << 8 | 0xff;
+			};
 			for (unsigned int y=0; y<256; y++)
 			{
 				float inv_f = static_cast<float>(255-y)/255.0f;
-				data_ceil[y] = (static_cast<int>(110 * inv_f) & 0xff) << 24 |
-					(static_cast<int>(180 * inv_f) & 0xff) << 16 |
-					(static_cast<int>(180 * inv_f) & 0xff) << 8 | 0xff;
+				data_ceil[y] = _to_rgba(0.43f * inv_f, 0.71f * inv_f, 0.71f * inv_f);
+
 				float f = static_cast<float>(y)/255.0f;
-				data_floor[y] = (static_cast<int>(200 * f) & 0xff) << 24 |
-					(static_cast<int>(100 * f) & 0xff) << 16 |
-					(static_cast<int>(50 * f) & 0xff) << 8 | 0xff;
+				data_floor[y] = _to_rgba(0.78f * f, 0.39f * f, 0.20f * f);
 			}
 
 			SDL_Rect rect = { 0, 0, 1, 256 };
