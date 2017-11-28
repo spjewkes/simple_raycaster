@@ -56,7 +56,8 @@ public:
 			tex_wall[1] = loadTexture("res/wall_2.bmp");
 			tex_wall[2] = loadTexture("res/wall_3.bmp");
 			tex_wall[3] = loadTexture("res/wall_4.bmp");
-			if (!tex_ceil || !tex_floor || !tex_wall[0] || !tex_wall[1] || !tex_wall[2] || !tex_wall[3])
+			tex_map = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STATIC, map_w, map_h);
+			if (!tex_ceil || !tex_floor || !tex_wall[0] || !tex_wall[1] || !tex_wall[2] || !tex_wall[3] || !tex_map)
 			{
 				cerr << "Failed to create textures.\n";
 				return false;
@@ -79,9 +80,23 @@ public:
 				data_floor[y] = _to_rgba(0.78f * f, 0.39f * f, 0.20f * f);
 			}
 
+			unsigned int data_map[map_h * map_w];
+			for (int y=0; y<map_h; y++)
+			{
+				for (int x=0; x<map_w; x++)
+				{
+					if (get_map(x, y) != '#')
+						data_map[(map_h - y - 1) * map_w + x] = _to_rgba(0.8f, 0.8f, 1.0f);
+					else
+						data_map[(map_h - y - 1) * map_w + x] = _to_rgba(0.0f, 0.0f, 0.0f);
+				}
+			}
+
 			SDL_Rect rect = { 0, 0, 1, 256 };
+			SDL_Rect rect_map = { 0, 0, map_w, map_h };
 			if (SDL_UpdateTexture(tex_ceil, &rect, data_ceil, sizeof(unsigned int)) ||
-				SDL_UpdateTexture(tex_floor, &rect, data_floor, sizeof(unsigned int)))
+				SDL_UpdateTexture(tex_floor, &rect, data_floor, sizeof(unsigned int)) ||
+				SDL_UpdateTexture(tex_map, &rect_map, data_map, sizeof(unsigned int) * map_w))
 			{
 				cerr << "Failed to update textures.\n";
 				return false;
@@ -233,6 +248,17 @@ public:
 					SDL_RenderCopy(renderer, tex_wall[3], &rect_src, &rect_dst);
 			}
 
+			// Draw map on top left
+			SDL_Rect rect_map = { 0, 0, map_w, map_h };
+			SDL_Rect rect_dst = { 0, 0, map_w * 3, map_h * 3 };
+			SDL_RenderCopy(renderer, tex_map, &rect_map, &rect_dst);
+
+			SDL_SetRenderDrawColor(renderer, 0xff, 0x3f, 0x3f, 0xff);
+			int pos_x = static_cast<int>(player_x) * 3;
+			int pos_y = (map_h - 1) * 3 - static_cast<int>(player_y) * 3;
+			SDL_Rect rect = { pos_x, pos_y, 3, 3 };
+			SDL_RenderFillRect(renderer, &rect);
+
 			SDL_RenderPresent(renderer);
 			
 			return true;
@@ -242,10 +268,9 @@ public:
 	{
 		SDL_DestroyTexture(tex_ceil);
 		SDL_DestroyTexture(tex_floor);
-		SDL_DestroyTexture(tex_wall[0]);
-		SDL_DestroyTexture(tex_wall[1]);
-		SDL_DestroyTexture(tex_wall[2]);
-		SDL_DestroyTexture(tex_wall[3]);
+		for (int i=0; i<4; i++)
+			SDL_DestroyTexture(tex_wall[i]);
+		SDL_DestroyTexture(tex_map);
 	}
 
 private:
@@ -288,6 +313,7 @@ private:
 	SDL_Texture* tex_ceil;
 	SDL_Texture* tex_floor;
 	SDL_Texture* tex_wall[4];
+	SDL_Texture* tex_map;
 };
 
 #endif
