@@ -92,66 +92,58 @@ public:
 			const Uint8 *state = SDL_GetKeyboardState(NULL);
 			if (state[SDL_SCANCODE_A] || state[SDL_SCANCODE_LEFT])
 			{
-				player_a -= (0.75f * elapsed_time);
+				player_a -= player_rot * elapsed_time;
 			}
 			if (state[SDL_SCANCODE_D] || state[SDL_SCANCODE_RIGHT])
 			{
-				player_a += (0.75f * elapsed_time);
+				player_a += player_rot * elapsed_time;
 			}
 			if (state[SDL_SCANCODE_W] || state[SDL_SCANCODE_UP])
 			{
-				player_x += sinf(player_a) * 5.0f * elapsed_time;
-				player_y += cosf(player_a) * 5.0f * elapsed_time;
+				float tmp_x = player_x + sinf(player_a) * player_mov * elapsed_time;
+				float tmp_y = player_y + cosf(player_a) * player_mov * elapsed_time;
 
-				int x = static_cast<int>(player_x);
-				int y = static_cast<int>(player_y);
-				if (get_map(x, y) == '#')
+				if (get_map(static_cast<int>(tmp_x), static_cast<int>(tmp_y)) != '#')
 				{
-					player_x -= sinf(player_a) * 5.0f * elapsed_time;
-					player_y -= cosf(player_a) * 5.0f * elapsed_time;
+					player_x = tmp_x;
+					player_y = tmp_y;
 				}
 			}
 			if (state[SDL_SCANCODE_S] || state[SDL_SCANCODE_DOWN])
 			{
-				player_x -= sinf(player_a) * 5.0f * elapsed_time;
-				player_y -= cosf(player_a) * 5.0f * elapsed_time;
+				float tmp_x = player_x - sinf(player_a) * player_mov * elapsed_time;
+				float tmp_y = player_y - cosf(player_a) * player_mov * elapsed_time;
 
-				int x = static_cast<int>(player_x);
-				int y = static_cast<int>(player_y);
-				if (get_map(x, y) == '#')
+				if (get_map(static_cast<int>(tmp_x), static_cast<int>(tmp_y)) != '#')
 				{
-					player_x += sinf(player_a) * 5.0f * elapsed_time;
-					player_y += cosf(player_a) * 5.0f * elapsed_time;
+					player_x = tmp_x;
+					player_y = tmp_y;
 				}
 			}
 			if (((state[SDL_SCANCODE_A] || state[SDL_SCANCODE_LEFT]) &&
 				 (state[SDL_SCANCODE_LSHIFT] || state[SDL_SCANCODE_RSHIFT])) ||
 				(state[SDL_SCANCODE_Q]))
 			{
-                player_x -= cosf(player_a) * 5.0f * elapsed_time;
-				player_y += sinf(player_a) * 5.0f * elapsed_time;
+                float tmp_x = player_x - cosf(player_a) * player_mov * elapsed_time;
+				float tmp_y = player_y + sinf(player_a) * player_mov * elapsed_time;
 
-				int x = static_cast<int>(player_x);
-				int y = static_cast<int>(player_y);
-				if (get_map(x, y) == '#')
+				if (get_map(static_cast<int>(tmp_x), static_cast<int>(tmp_y)) != '#')
 				{
-					player_x += cosf(player_a) * 5.0f * elapsed_time;
-					player_y -= sinf(player_a) * 5.0f * elapsed_time;
+					player_x = tmp_x;
+					player_y = tmp_y;
 				}
 			}
 			if (((state[SDL_SCANCODE_D] || state[SDL_SCANCODE_RIGHT]) &&
 				 (state[SDL_SCANCODE_LSHIFT] || state[SDL_SCANCODE_RSHIFT])) ||
 				(state[SDL_SCANCODE_E]))
 			{
-                player_x += cosf(player_a) * 5.0f * elapsed_time;
-				player_y -= sinf(player_a) * 5.0f * elapsed_time;
+                float tmp_x = player_x + cosf(player_a) * player_mov * elapsed_time;
+				float tmp_y = player_y - sinf(player_a) * player_mov * elapsed_time;
 
-				int x = static_cast<int>(player_x);
-				int y = static_cast<int>(player_y);
-				if (get_map(x, y) == '#')
+				if (get_map(static_cast<int>(tmp_x), static_cast<int>(tmp_y)) != '#')
 				{
-					player_x -= cosf(player_a) * 5.0f * elapsed_time;
-					player_y += sinf(player_a) * 5.0f * elapsed_time;
+					player_x = tmp_x;
+					player_y = tmp_y;
 				}
 			}
 
@@ -166,12 +158,12 @@ public:
 			
 			for (int x=0; x<width(); x++)
 			{
-				float rayAngle = (player_a - fov / 2.0f) + (static_cast<float>(x)  / static_cast<float>(width())) * fov;
+				float ray_angle = (player_a - fov / 2.0f) + (static_cast<float>(x)  / static_cast<float>(width())) * fov;
 				float distance_to_wall = 0.0f;
 				bool hitwall = false;
 
-				float eyex = sinf(rayAngle);
-				float eyey = cosf(rayAngle);
+				float eyex = sinf(ray_angle);
+				float eyey = cosf(ray_angle);
 
 				float sample_x = 0.0f;
 
@@ -286,6 +278,9 @@ private:
 
 	float base_fov = 2.5f;
 	float fov = base_fov / 3.14159f;
+
+	float player_rot = 1.25f;
+	float player_mov = 5.0f;
 
 	SDL_Texture* tex_ceil;
 	SDL_Texture* tex_floor;
